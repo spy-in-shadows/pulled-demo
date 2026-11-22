@@ -37,8 +37,8 @@ pulled checks the demo on every start (silently, because it's in sync).
 ## Deploy
 
 [`render.yaml`](render.yaml) is a Render Blueprint: one free Node web service (`npm ci`, `npm start`,
-`NODE_ENV=production`, health check on `/`). In Render: **New → Blueprint → pulled-demo**. With
-`NODE_ENV=production` the app doesn't load pulled in import mode; the api still checks the scenarios.
+`NODE_ENV=production`, health check on `/`). In Render: **New → Blueprint → pulled-demo**. `npm start`
+runs plain `node server.js` (pulled's import mode is for development); the api checks the scenarios either way.
 
 ## Run it locally
 
