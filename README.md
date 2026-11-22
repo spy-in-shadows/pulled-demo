@@ -9,7 +9,7 @@ tells you, right after you pull, what in your local setup is out of sync with th
 version, `.env`, the Prisma client, migrations) and the one command that fixes it. It's silent when
 everything matches.
 
-**Live:** https://pulled-demo.onrender.com (placeholder until the first deploy)
+**Live:** https://pulled-demo.onrender.com (**pending deploy**: the Render service hasn't been created yet; the URL is what Render will assign if the name is free)
 
 ## What the demo shows
 
@@ -33,6 +33,12 @@ the generated client's copy of it, `.env.example` and `.env`), taken from real `
 
 The demo app itself uses pulled the normal way: `npm run dev` starts it with `node --import pulled`, so
 pulled checks the demo on every start (silently, because it's in sync).
+
+## Deploy
+
+[`render.yaml`](render.yaml) is a Render Blueprint: one free Node web service (`npm ci`, `npm start`,
+`NODE_ENV=production`, health check on `/`). In Render: **New → Blueprint → pulled-demo**. With
+`NODE_ENV=production` the app doesn't load pulled in import mode; the api still checks the scenarios.
 
 ## Run it locally
 

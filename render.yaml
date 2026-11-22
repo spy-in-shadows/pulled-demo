@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: pulled-demo
+    runtime: node
+    plan: free
+    repo: https://github.com/spy-in-shadows/pulled-demo
+    branch: main
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
