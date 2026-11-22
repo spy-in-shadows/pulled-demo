@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pulled demo</title>
+<meta name="description" content="After you pull, pulled tells you exactly what in your local setup is out of sync, and the one command that fixes it.">
+<style>
+  :root {
+    --bg: #f7f7f5; --surface: #ffffff; --text: #1d1d1b; --muted: #5f5f5a; --border: #e3e3de;
+    --accent: #1f6feb; --accent-text: #ffffff; --code-bg: #efefea;
+    --term-bg: #16181d; --term-text: #d7dae0; --term-dim: #8b929e; --term-yellow: #e5c07b;
+    --term-cyan: #56b6c2; --term-green: #98c379; --term-prompt: #7f8794;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111214; --surface: #1a1b1e; --text: #e8e8e6; --muted: #a0a09a; --border: #2c2d31;
+      --accent: #4c8dff; --accent-text: #0b0c0e; --code-bg: #24252a; --term-bg: #0b0c0f;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  main, footer { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+  header { padding: 56px 0 8px; }
+  .name { font: 600 14px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--muted); letter-spacing: .02em; }
+  h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.2; margin: 12px 0 0; letter-spacing: -.01em; max-width: 24ch; }
+  h2 { font-size: 20px; margin: 48px 0 12px; }
+  p { margin: 0 0 12px; }
+  .muted { color: var(--muted); }
+  code { font: 14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+  .story { max-width: 68ch; }
+  .ways { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .way { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .way h3 { font-size: 15px; margin: 0 0 8px; }
+  .way pre { margin: 0 0 8px; overflow-x: auto; }
+  .way pre code { display: block; padding: 8px 10px; }
+  .way p { font-size: 14px; color: var(--muted); margin: 0; }
+  .cards { display: grid; gap: 16px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; min-width: 0; }
+  .card-head { display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; }
+  .card h3 { font-size: 17px; margin: 0; }
+  .card .id { font: 13px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--muted); }
+  dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; margin: 12px 0 0; font-size: 15px; }
+  dt { color: var(--muted); }
+  dd { margin: 0; }
+  @media (max-width: 560px) { dl { grid-template-columns: 1fr; } dd { margin-bottom: 6px; } }
+  button {
+    font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; border: 0; border-radius: 8px;
+    padding: 8px 14px; background: var(--accent); color: var(--accent-text); white-space: nowrap;
+  }
+  button:disabled { opacity: .6; cursor: wait; }
+  button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .term {
+    margin: 14px 0 0; background: var(--term-bg); color: var(--term-text); border-radius: 8px;
+    padding: 12px 14px; font: 13px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    overflow-x: auto; white-space: pre;
+  }
+  .t-prompt { color: var(--term-prompt); }
+  .t-head { color: var(--term-yellow); font-weight: 700; }
+  .t-title { font-weight: 700; }
+  .t-detail { color: var(--term-dim); }
+  .t-fix { color: var(--term-cyan); }
+  .t-ok { color: var(--term-green); }
+  .t-exit { color: var(--term-dim); }
+  details { margin-top: 10px; font-size: 14px; }
+  summary { cursor: pointer; color: var(--muted); }
+  details pre { margin: 8px 0 0; background: var(--code-bg); border-radius: 8px; padding: 10px 12px; overflow-x: auto; font-size: 12px; }
+  footer { padding: 48px 16px 40px; color: var(--muted); font-size: 14px; }
+  footer a { color: var(--accent); }
+  .error { color: #d14343; font-size: 14px; margin-top: 10px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="name">pulled</div>
+    <h1>After you pull, it tells you what's out of sync and the one command that fixes it.</h1>
+  </header>
+
+  <section class="story">
+    <h2>The problem</h2>
+    <p>You pull, start the app, and it crashes with <code>column "avatarUrl" does not exist</code>. Twenty minutes later you find out a teammate changed the Prisma schema and added a migration. Or bumped a dependency. Or added a new key to <code>.env.example</code>.</p>
+    <p><strong>pulled</strong> compares what the code expects with what's on your machine (<code>node_modules</code>, Node version, <code>.env</code>, the Prisma client and migrations) and stays completely silent when everything matches. No git hooks, no stored state, no setup.</p>
+  </section>
+
+  <h2>Three ways to run it</h2>
+  <div class="ways">
+    <div class="way">
+      <h3>First line of your app</h3>
+      <pre><code>import 'pulled';</code></pre>
+      <p>Or <code>require('pulled')</code>. Checks on every dev start.</p>
+    </div>
+    <div class="way">
+      <h3>No code change</h3>
+      <pre><code>node --import pulled server.js</code></pre>
+      <p>Put it in your <code>"dev"</code> script.</p>
+    </div>
+    <div class="way">
+      <h3>CLI</h3>
+      <pre><code>npx pulled --fix</code></pre>
+      <p>Exit code 1 when out of sync; <code>--fix</code> runs the fixes.</p>
+    </div>
+  </div>
+
+  <h2>Try it</h2>
+  <p class="muted">Each scenario is a small project on this server, left in a known state. The button runs <code>check()</code> from <code>pulled/api</code> on it, live.</p>
+  <div class="cards" id="cards"><p class="muted">Loading scenarios…</p></div>
+</main>
+
+<footer>
+  pulled is MIT licensed ·
+  <a href="https://github.com/spy-in-shadows/pulled">GitHub</a> ·
+  <a href="https://www.npmjs.com/package/pulled">npm</a> ·
+  <a href="https://github.com/spy-in-shadows/pulled-demo">demo source</a>
+</footer>
+
+<script>
+  const el = (tag, cls, text) => {
+    const node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  };
+
+  /** One line of pulled's CLI output, colored the way the CLI colors it on a terminal. */
+  function lineClass(line) {
+    if (line.startsWith('⚠')) return 't-head';
+    if (line.startsWith('  • ')) return 't-title';
+    if (line.startsWith('      → ')) return 't-fix';
+    if (line.startsWith('      ')) return 't-detail';
+    return '';
+  }
+
+  function renderTerminal(pre, text, ok) {
+    pre.replaceChildren(el('span', 't-prompt', '$ npx pulled\n'));
+    if (text) {
+      for (const line of text.replace(/\n$/, '').split('\n')) pre.append(el('span', lineClass(line), `${line}\n`));
+    } else {
+      pre.append(el('span', 't-ok', '(no output: everything is in sync)\n'));
+    }
+    pre.append(el('span', 't-exit', `exit ${ok ? 0 : 1}`));
+  }
+
+  function card(s) {
+    const root = el('article', 'card');
+    const head = el('div', 'card-head');
+    const titles = el('div');
+    titles.append(el('h3', '', s.title), el('div', 'id', `scenarios/${s.id}`));
+    const button = el('button', '', 'Run pulled');
+    head.append(titles, button);
+    const dl = el('dl');
+    dl.append(el('dt', '', 'Your teammate pushed'), el('dd', '', s.pushed), el('dt', '', 'On your machine'), el('dd', '', s.local));
+    root.append(head, dl);
+
+    const out = el('div');
+    root.append(out);
+    button.addEventListener('click', async () => {
+      button.disabled = true;
+      button.textContent = 'Running…';
+      try {
+        const res = await fetch(`/api/scenarios/${encodeURIComponent(s.id)}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const { report, text } = await res.json();
+        const pre = el('pre', 'term');
+        renderTerminal(pre, text, report.ok);
+        const details = el('details');
+        details.append(el('summary', '', 'Raw JSON from check()'), el('pre', '', JSON.stringify(report, null, 2)));
+        out.replaceChildren(pre, details);
+        button.textContent = 'Run again';
+      } catch (err) {
+        out.replaceChildren(el('p', 'error', `Could not run the check (${err.message}).`));
+        button.textContent = 'Run pulled';
+      } finally {
+        button.disabled = false;
+      }
+    });
+    return root;
+  }
+
+  fetch('/api/scenarios')
+    .then((res) => res.json())
+    .then((list) => document.getElementById('cards').replaceChildren(...list.map(card)))
+    .catch(() => {
+      document.getElementById('cards').replaceChildren(el('p', 'error', 'Could not load the scenarios.'));
+    });
+</script>
+</body>
+</html>

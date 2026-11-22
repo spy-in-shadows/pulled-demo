@@ -1,0 +1,4 @@
+node_modules/
+# Each scenario commits the few files from node_modules that pulled reads.
+!scenarios/*/node_modules/
+.DS_Store
