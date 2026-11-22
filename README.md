@@ -1,4 +1,3 @@
-> **Note:** pulled isn't on npm yet, so this demo installs it from `vendor/pulled-0.1.0.tgz` (packed from
 > [spy-in-shadows/pulled](https://github.com/spy-in-shadows/pulled)). Once it's published, switch with
 > `npm i pulled@latest`, delete `vendor/`, commit and push.
 
@@ -18,14 +17,14 @@ The page has a card for each scenario in [`scenarios/`](scenarios). Each one is 
 with yet. **Run pulled** calls `check()` from `pulled/api` on that folder, live, and shows the result the
 way the CLI prints it, plus the raw JSON report.
 
-| Scenario | What your teammate pushed | What pulled says |
-|---|---|---|
-| [`in-sync`](scenarios/in-sync) | nothing new | nothing (silent, exit 0) |
-| [`deps-stale`](scenarios/deps-stale) | dayjs 1.11.10 → 1.11.13, new dependency nanoid | 2 packages differ → `npm install` |
-| [`env-missing`](scenarios/env-missing) | two new keys in `.env.example` | Missing in .env: SESSION_SECRET, STRIPE_SECRET_KEY |
-| [`node-mismatch`](scenarios/node-mismatch) | an `.nvmrc` pinning Node 18 | Project expects Node 18 → `nvm use` |
-| [`prisma-stale`](scenarios/prisma-stale) | a new field in `schema.prisma` | Prisma schema changed → `npx prisma generate` |
-| [`everything`](scenarios/everything) | all of the above | all four issues |
+| Scenario                                   | What your teammate pushed                      | What pulled says                                   |
+| ------------------------------------------ | ---------------------------------------------- | -------------------------------------------------- |
+| [`in-sync`](scenarios/in-sync)             | nothing new                                    | nothing (silent, exit 0)                           |
+| [`deps-stale`](scenarios/deps-stale)       | dayjs 1.11.10 → 1.11.13, new dependency nanoid | 2 packages differ → `npm install`                  |
+| [`env-missing`](scenarios/env-missing)     | two new keys in `.env.example`                 | Missing in .env: SESSION_SECRET, STRIPE_SECRET_KEY |
+| [`node-mismatch`](scenarios/node-mismatch) | an `.nvmrc` pinning Node 18                    | Project expects Node 18 → `nvm use`                |
+| [`prisma-stale`](scenarios/prisma-stale)   | a new field in `schema.prisma`                 | Prisma schema changed → `npx prisma generate`      |
+| [`everything`](scenarios/everything)       | all of the above                               | all four issues                                    |
 
 Each scenario commits only the files pulled reads (`package.json`, the lockfiles, the Prisma schema and
 the generated client's copy of it, `.env.example` and `.env`), taken from real `npm install` and
@@ -51,10 +50,10 @@ npm i
 npm run dev        # http://localhost:3000
 ```
 
-| Endpoint | |
-|---|---|
-| `GET /` | the page |
-| `GET /api/scenarios` | the list of scenarios |
+| Endpoint                 |                                                                                        |
+| ------------------------ | -------------------------------------------------------------------------------------- |
+| `GET /`                  | the page                                                                               |
+| `GET /api/scenarios`     | the list of scenarios                                                                  |
 | `GET /api/scenarios/:id` | `{ report, text }`: pulled's Report for that scenario, and the same report as CLI text |
 
 ## Try it yourself

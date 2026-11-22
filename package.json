@@ -15,6 +15,6 @@
   },
   "dependencies": {
     "express": "^5.1.0",
-    "pulled": "file:vendor/pulled-0.1.0.tgz"
+    "pulled": "^0.0.0-stage"
   }
 }
