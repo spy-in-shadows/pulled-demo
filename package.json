@@ -15,6 +15,6 @@
   },
   "dependencies": {
     "express": "^5.1.0",
-    "pulled": "^0.0.0-stage"
+    "pulled": "^0.1.0"
   }
 }
