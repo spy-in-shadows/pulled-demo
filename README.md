@@ -8,7 +8,7 @@ tells you, right after you pull, what in your local setup is out of sync with th
 version, `.env`, the Prisma client, migrations) and the one command that fixes it. It's silent when
 everything matches.
 
-**Live:** https://pulled-demo.onrender.com (**pending deploy**: the Render service hasn't been created yet; the URL is what Render will assign if the name is free)
+**Live:** https://pulled-demo.onrender.com
 
 ## What the demo shows
 
